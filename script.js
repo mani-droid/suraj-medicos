@@ -123,6 +123,40 @@ const products = [
 ];
 
 function renderProducts(filter = 'all') {
+  // ─── LIVE SEARCH FUNCTIONALITY ────────────────────
+const searchInput = document.getElementById('searchInput');
+if (searchInput) {
+  searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const grid = document.getElementById('productGrid');
+    
+    // Filter the products array based on what the user types
+    const searchedProducts = products.filter(p => 
+      p.name.toLowerCase().includes(searchTerm) || 
+      p.category.toLowerCase().includes(searchTerm)
+    );
+    
+    // If no products match, show a friendly message
+    if (searchedProducts.length === 0) {
+      grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">No products found for "${e.target.value}". Try asking our AI or on WhatsApp!</p>`;
+      return;
+    }
+
+    // Otherwise, rebuild the grid with the searched items
+    grid.innerHTML = searchedProducts.map(p => `
+      <div class="product-card reveal visible">
+        <div class="product-img">${p.icon}</div>
+        <div class="product-info">
+          <div class="product-cat">${p.category}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-price"><span class="original">${p.original}</span>${p.price}</div>
+          <button class="product-btn" onclick="addToCart('${p.name}')">🛒 Add to Cart</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   
