@@ -322,3 +322,46 @@ function sendPrescription() {
   const encodedText = encodeURIComponent(message);
   window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
 }
+
+// ─── 12. CONTACT FORM EMAIL ROUTER ────────────────
+const contactForm = document.getElementById('contactForm');
+if (contactForm) {
+  contactForm.addEventListener('submit', function(e) {
+    e.preventDefault(); // Stops the page from redirecting
+    
+    const btn = contactForm.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Sending...';
+    btn.disabled = true;
+
+    const formData = new FormData(contactForm);
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    })
+    .then(async (response) => {
+      if (response.status == 200) {
+        // Show success message and clear the form
+        document.getElementById('formSuccess').style.display = 'block';
+        contactForm.reset();
+      } else {
+        showToast("⚠️ Error sending message. Please try WhatsApp.");
+      }
+    })
+    .catch(error => {
+      showToast("⚠️ Network error. Please try WhatsApp.");
+    })
+    .finally(() => {
+      // Put the button back to normal
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      
+      // Hide the green success message after 5 seconds
+      setTimeout(() => {
+        const successMsg = document.getElementById('formSuccess');
+        if(successMsg) successMsg.style.display = 'none';
+      }, 5000);
+    });
+  });
+}
