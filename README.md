@@ -1,102 +1,48 @@
-# 🏥 Suraj Medicos — Medical Pharmacy Website
+# 🏥 Suraj Medicos — Smart Pharmacy Web App
 
-A professional, industry-level medical pharmacy website with:
-- Custom animated cursor
-- Animated hero section with floating stat cards
-- Product catalog with filter tabs
-- Health tips carousel
-- Contact form with WhatsApp integration
-- Scroll reveal animations
-- Responsive on all devices
+A professional, industry-level medical pharmacy web application. Built without a traditional database, this app leverages modern browser storage, AI, and API integrations to provide a seamless, app-like experience for customers while keeping operations simple for the pharmacy owner via WhatsApp.
+
+## ✨ Core Features Built
+
+### 🛍️ Smart E-Commerce Engine
+* **Memory Cart (Local Storage):** Cart items are saved in the browser. Customers won't lose their orders if they accidentally refresh or close the tab.
+* **Custom Medicine Requests:** A dedicated input box allows users to order unlisted or rare medicines.
+* **WhatsApp Checkout Routing:** The cart compiles all grid items and custom requests into a cleanly formatted list and pushes it directly to the pharmacy's WhatsApp, automatically asking for final stock confirmation and the discounted bill.
+
+### 🤖 AI Pharmacist Assistant
+* **Botpress Integration:** A floating AI chatbot trained specifically on Suraj Medicos' custom Knowledge Base.
+* **Smart Routing:** Instructs customers on store policies, operating hours, and edge cases (like medical emergencies and prescription requirements) without human intervention.
+
+### 📱 Progressive Web App (PWA)
+* **Installable:** Customers can click "Add to Home Screen" on iOS and Android to install the website as a native app with a custom icon.
+* **Service Worker:** Powered by `sw.js` and `manifest.json` for app-like full-screen display.
+
+### 🗺️ Advanced UI/UX
+* **Live Store Status:** A dynamic navbar badge that reads the real-world clock and automatically switches between "🟢 Open Now" and "🔴 Closed" based on the store's actual operating hours.
+* **Interactive Dark-Mode Map:** Embedded Google Maps iframe with CSS filters to match the site's sleek dark theme.
+* **Rich Link Previews:** Open Graph meta tags so the link looks like a premium card when shared on WhatsApp, Facebook, or Instagram.
+* **Smooth Interactions:** Custom animated cursor, typewriter effects, health tips carousel, and a sliding FAQ accordion.
+
+### 📧 Backend-Free Integrations
+* **Web3Forms:** The "Send a Message" contact form routes directly to the owner's email inbox without needing a PHP or Node.js backend.
+* **Google Analytics:** Invisible tracking script to monitor daily visitors, devices, and traffic sources.
 
 ---
 
 ## 📁 File Structure
 
-```
+```text
 suraj-medicos/
 │
-├── index.html      ← Main HTML file
-├── style.css       ← All styles
-├── script.js       ← All interactivity
-├── images/         ← (optional) Add your own images
+├── index.html      ← Main HTML (UI, Meta tags, Botpress script, GA snippet)
+├── style.css       ← All styles, animations, and responsive breakpoints
+├── script.js       ← Logic (Cart engine, Live clock, Typewriter, FAQ)
+├── manifest.json   ← PWA App Manifest (App name, theme color, icons)
+├── sw.js           ← PWA Service Worker (For installability)
+├── images/         ← Folder for actual pharmacy photos
 │   ├── hero-pharmacy.jpg
 │   └── about-pharmacy.jpg
-└── README.md
-```
+└── README.md       ← Documentation
 
----
-
-## 🚀 Deploy to GitHub Pages (Step-by-Step)
-
-### Step 1 — Create a GitHub Account
-Go to [github.com](https://github.com) and sign up (free).
-
-### Step 2 — Create a New Repository
-1. Click the **"+"** button (top right) → **New repository**
-2. Name it: `suraj-medicos`
-3. Keep it **Public**
-4. Click **Create repository**
-
-### Step 3 — Upload Files
-**Option A: Via GitHub Website (Easiest)**
-1. In your new repo, click **"Add file" → "Upload files"**
-2. Drag and drop: `index.html`, `style.css`, `script.js`
-3. Add commit message: `Initial website upload`
-4. Click **"Commit changes"**
-
-**Option B: Via Git (Command Line)**
-```bash
-# In the project folder
-git init
-git add .
-git commit -m "Initial commit - Suraj Medicos website"
-git remote add origin https://github.com/YOUR_USERNAME/suraj-medicos.git
-git branch -M main
-git push -u origin main
-```
-
-### Step 4 — Enable GitHub Pages
-1. Go to your repo → **Settings**
-2. Scroll to **"Pages"** section (left sidebar)
-3. Under **Source**, select **"Deploy from a branch"**
-4. Choose **"main"** branch, **"/ (root)"** folder
-5. Click **Save**
-
-### Step 5 — Your Live Website ✅
-After 1–2 minutes, your site is live at:
-```
-https://YOUR_USERNAME.github.io/suraj-medicos/
-```
-
----
-
-## 🖼️ Adding Custom Images (Optional)
-
-1. Create an `images/` folder
-2. Add your pharmacy photos as:
-   - `images/hero-pharmacy.jpg` — Hero section image
-   - `images/about-pharmacy.jpg` — About section image
-3. The website will automatically show them
-
----
-
-## 📱 WhatsApp Integration
-
-Replace `919876543210` in `index.html` and `script.js` with the actual WhatsApp number (country code + number, no spaces or dashes).
-
----
-
-## 📞 Customization Checklist
-
-- [ ] Replace pharmacy name if needed
-- [ ] Update phone number
-- [ ] Update address
-- [ ] Update store hours
-- [ ] Add real product images
-- [ ] Update WhatsApp number
-- [ ] Update email address
-
----
 
 *Built with HTML, CSS & Vanilla JS — No frameworks required.*
