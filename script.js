@@ -2,20 +2,17 @@
    SURAJ MEDICOS — script.js
    ============================ */
 
-// 1. INITIALIZE ON LOAD
+// ─── 1. ENGINE START ──────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Suraj Medicos Engine Started...");
-  
-  // Start the visual components
   renderProducts('all');
   buildTipsCarousel();
-  
-  // Set up observers
   setupScrollReveal();
   setupStatsCounter();
+  setupLiveSearch();
 });
 
-// ─── PRELOADER ───────────────────────────────────
+// ─── 2. PRELOADER ─────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
     const preloader = document.getElementById('preloader');
@@ -23,7 +20,7 @@ window.addEventListener('load', () => {
   }, 1000);
 });
 
-// ─── CUSTOM CURSOR ───────────────────────────────
+// ─── 3. CUSTOM CURSOR ─────────────────────────────
 const cursor = document.getElementById('cursor');
 const follower = document.getElementById('cursor-follower');
 let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
@@ -48,11 +45,15 @@ function animateFollower() {
 }
 animateFollower();
 
-// ─── NAVBAR & MENU ───────────────────────────────
+// ─── 4. NAVBAR & SCROLL TO TOP ────────────────────
 const navbar = document.getElementById('navbar');
+const scrollBtn = document.getElementById('scrollTop');
 window.addEventListener('scroll', () => {
   if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 60);
+  if (scrollBtn) scrollBtn.classList.toggle('show', window.scrollY > 400);
 });
+
+if (scrollBtn) scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
@@ -63,7 +64,7 @@ if (hamburger && mobileMenu) {
   });
 }
 
-// ─── COUNTER ANIMATION ────────────────────────────
+// ─── 5. STATS COUNTER ─────────────────────────────
 function animateCounters() {
   document.querySelectorAll('.num').forEach(el => {
     const target = +el.dataset.target;
@@ -84,29 +85,11 @@ function setupStatsCounter() {
       statsObserver.disconnect();
     }
   }, { threshold: 0.5 });
-  
   const statsEl = document.querySelector('.hero-stats');
   if (statsEl) statsObserver.observe(statsEl);
 }
 
-// ─── SCROLL REVEAL ────────────────────────────────
-function setupScrollReveal() {
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-
-  document.querySelectorAll('.service-card, .product-card, .testi-card, .why-item, .ahl').forEach(el => {
-    el.classList.add('reveal');
-    revealObserver.observe(el);
-  });
-}
-
-// ─── PRODUCTS DATA ────────────────────────────────
+// ─── 6. PRODUCTS & LIVE SEARCH ────────────────────
 const products = [
   { icon: '💊', name: 'Paracetamol 500mg', cat: 'otc', category: 'OTC Medicine', price: '₹28', original: '₹35' },
   { icon: '🩸', name: 'Glucometer Kit', cat: 'diagnostic', category: 'Diagnostic', price: '₹899', original: '₹1,200' },
@@ -119,86 +102,75 @@ const products = [
   { icon: '🧪', name: 'Pregnancy Test Kit', cat: 'diagnostic', category: 'Diagnostic', price: '₹49', original: '₹70' },
   { icon: '💊', name: 'Cetirizine 10mg Strip', cat: 'otc', category: 'OTC Medicine', price: '₹32', original: '₹40' },
   { icon: '🩹', name: 'Bandage Roll 4"', cat: 'surgical', category: 'Surgical', price: '₹55', original: '₹70' },
-  { icon: '🧴', name: 'Hand Sanitizer 500ml', cat: 'personal', category: 'Personal Care', price: '₹149', original: '₹190' },
+  { icon: '🧴', name: 'Hand Sanitizer 500ml', cat: 'personal', category: 'Personal Care', price: '₹149', original: '₹190' }
 ];
 
-function renderProducts(filter = 'all') {
-  // ─── LIVE SEARCH FUNCTIONALITY ────────────────────
-const searchInput = document.getElementById('searchInput');
-if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase();
-    const grid = document.getElementById('productGrid');
-    
-    // Filter the products array based on what the user types
-    const searchedProducts = products.filter(p => 
-      p.name.toLowerCase().includes(searchTerm) || 
-      p.category.toLowerCase().includes(searchTerm)
-    );
-    
-    // If no products match, show a friendly message
-    if (searchedProducts.length === 0) {
-      grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">No products found for "${e.target.value}". Try asking our AI or on WhatsApp!</p>`;
-      return;
-    }
-
-    // Otherwise, rebuild the grid with the searched items
-    grid.innerHTML = searchedProducts.map(p => `
-      <div class="product-card reveal visible">
-        <div class="product-img">${p.icon}</div>
-        <div class="product-info">
-          <div class="product-cat">${p.category}</div>
-          <div class="product-name">${p.name}</div>
-          <div class="product-price"><span class="original">${p.original}</span>${p.price}</div>
-          <button class="product-btn" onclick="addToCart('${p.name}')">🛒 Add to Cart</button>
-        </div>
-      </div>
-    `).join('');
-  });
-}
-
+function renderProducts(filter = 'all', searchTerm = '') {
   const grid = document.getElementById('productGrid');
   if (!grid) return;
   
-  const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+  let filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
+  
+  if (searchTerm) {
+    filtered = products.filter(p => 
+      p.name.toLowerCase().includes(searchTerm) || 
+      p.category.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<p style="text-align:center; grid-column: 1/-1; color: var(--text-muted); padding: 40px 0;">No products found for "${searchTerm}". Try asking our AI or on WhatsApp!</p>`;
+    return;
+  }
+
   grid.innerHTML = filtered.map(p => `
-    <div class="product-card reveal">
+    <div class="product-card reveal visible" style="opacity: 1; transform: none;">
       <div class="product-img">${p.icon}</div>
       <div class="product-info">
         <div class="product-cat">${p.category}</div>
         <div class="product-name">${p.name}</div>
-        <div class="product-price">
-          <span class="original">${p.original}</span>${p.price}
-        </div>
+        <div class="product-price"><span class="original">${p.original}</span>${p.price}</div>
         <button class="product-btn" onclick="addToCart('${p.name}')">🛒 Add to Cart</button>
       </div>
     </div>
   `).join('');
 }
 
-// ─── CART & TOAST ─────────────────────────────────
-// ─── SHOPPING CART ENGINE ─────────────────────────
-let cart = []; // This empty array acts as the customer's basket
+// Category Tabs
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderProducts(tab.dataset.cat);
+    const searchInput = document.getElementById('searchInput');
+    if(searchInput) searchInput.value = ''; // clear search when switching tabs
+  });
+});
 
-// ─── SHOPPING CART & CHECKOUT ENGINE ─────────────────────────
-let cart = []; // The customer's digital basket
+// Live Search logic
+function setupLiveSearch() {
+  const searchInput = document.getElementById('searchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      // Remove active state from tabs when searching
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      renderProducts('all', e.target.value.toLowerCase());
+    });
+  }
+}
+
+// ─── 7. SHOPPING CART ENGINE ──────────────────────
+let cart = []; // Declared ONLY ONCE!
 
 function addToCart(name) {
-  // 1. Add item to cart
   cart.push(name);
-  
-  // 2. Update the red badge number
   const badge = document.getElementById('cartBadge');
   if (badge) {
-    badge.style.display = 'flex'; // Make badge visible
-    badge.textContent = cart.length; // Update the number
-    
-    // Add a little "pop" animation to the badge
+    badge.style.display = 'flex';
+    badge.textContent = cart.length;
     badge.style.transform = 'scale(1.3)';
     setTimeout(() => badge.style.transform = 'scale(1)', 200);
   }
-  
-  // 3. Show notification
   showToast(`✅ ${name} added!`);
 }
 
@@ -207,22 +179,17 @@ function checkoutCart() {
     showToast("⚠️ Your cart is empty!");
     return;
   }
-
-  // Build the professional receipt
   let orderText = "Hello Suraj Medicos! I would like to place an order for home delivery:\n\n";
-  
   cart.forEach((item, index) => {
     orderText += `${index + 1}. ${item}\n`;
   });
-  
   orderText += "\nPlease let me know the total price and when it can be delivered.";
 
-  // Open WhatsApp to send the order
-  const phone = "919650037400"; // Your pharmacy number
+  const phone = "919650037400"; 
   const encodedText = encodeURIComponent(orderText);
   window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
   
-  // Clear the cart after sending
+  // Clear cart
   cart = [];
   const badge = document.getElementById('cartBadge');
   if (badge) {
@@ -231,33 +198,6 @@ function checkoutCart() {
   }
 }
 
-
-// ─── WHATSAPP CHECKOUT LOGIC ──────────────────────
-function checkoutCart() {
-  if (cart.length === 0) {
-    showToast("⚠️ Your cart is empty!");
-    return;
-  }
-
-  // Build the receipt text
-  let orderText = "Hello Suraj Medicos! I would like to place an order for home delivery:\n\n";
-  
-  cart.forEach((item, index) => {
-    orderText += `${index + 1}. ${item.name}\n`;
-  });
-  
-  orderText += "\nPlease let me know the total price and when it can be delivered.";
-
-  // Open WhatsApp with the pre-filled order
-  const phone = "919650037400"; // Your pharmacy number
-  const encodedText = encodeURIComponent(orderText);
-  window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
-  
-  // Empty the cart after sending
-  cart = []; 
-}
-
-
 function showToast(msg) {
   const toast = document.createElement('div');
   toast.style.cssText = `
@@ -265,14 +205,15 @@ function showToast(msg) {
     background:#00c896; color:#0d1117; padding:12px 24px; border-radius:50px;
     font-weight:600; font-size:0.9rem; z-index:9999;
     box-shadow: 0 8px 30px rgba(0,200,150,0.4);
+    animation: fadeUp 0.3s ease;
   `;
   toast.textContent = msg;
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2500);
 }
 
-// ─── HEALTH TIPS CAROUSEL ─────────────────────────
-const tips = [
+// ─── 8. HEALTH TIPS CAROUSEL ──────────────────────
+const healthTipsData = [
   { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily. Proper hydration supports kidney function and energy.' },
   { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins. Good nutrition is the foundation of health.' },
   { icon: '🚶', title: 'Daily Exercise', text: 'A 30-minute walk daily can reduce the risk of heart disease and diabetes significantly.' }
@@ -286,7 +227,7 @@ function buildTipsCarousel() {
   if (!carousel || !dotsEl) return;
   
   carousel.innerHTML = `<div class="tips-track" id="tipsTrack">
-    ${tips.map(t => `
+    ${healthTipsData.map(t => `
       <div class="tip-slide">
         <div class="tip-card">
           <div class="tip-icon">${t.icon}</div>
@@ -295,11 +236,11 @@ function buildTipsCarousel() {
       </div>`).join('')}
   </div>`;
   
-  dotsEl.innerHTML = tips.map((_, i) =>
+  dotsEl.innerHTML = healthTipsData.map((_, i) =>
     `<div class="tip-dot ${i===0?'active':''}" onclick="goTip(${i})"></div>`
   ).join('');
 
-  setInterval(() => goTip((tipIdx + 1) % tips.length), 4000);
+  setInterval(() => goTip((tipIdx + 1) % healthTipsData.length), 4000);
 }
 
 function goTip(i) {
@@ -309,10 +250,19 @@ function goTip(i) {
   document.querySelectorAll('.tip-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
 }
 
-// ─── DYNAMIC STYLES ───────────────────────────────
-const customStyles = document.createElement('style');
-customStyles.textContent = `
-  .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s all ease; }
-  .reveal.visible { opacity: 1; transform: translateY(0); }
-`;
-document.head.appendChild(customStyles);
+// ─── 9. SCROLL REVEAL ─────────────────────────────
+function setupScrollReveal() {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.service-card, .testi-card, .why-item').forEach(el => {
+    el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
+}
