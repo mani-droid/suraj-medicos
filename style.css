@@ -582,3 +582,39 @@ p { color: var(--text-muted); }
   pointer-events: none !important;
   transition: opacity 0.5s ease-out;
 }
+
+/* --- HEALTH TIPS CAROUSEL MOVEMENT --- */
+.tips-carousel {
+  overflow: hidden !important; /* Hides the tips that are waiting in line */
+  width: 100%;
+  position: relative;
+}
+
+.tips-track {
+  display: flex;
+  /* This creates the smooth, cascading slide effect */
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+  width: 100%;
+}
+
+.tip-slide {
+  min-width: 100%; /* Ensures only one tip is visible at a time */
+  padding: 0 15px;
+  box-sizing: border-box;
+}
+
+.tip-dot {
+  cursor: pointer;
+  height: 12px;
+  width: 12px;
+  margin: 0 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: inline-block;
+  transition: all 0.3s ease;
+}
+
+.tip-dot.active {
+  background-color: #00c896 !important; /* Forces your brand green */
+  transform: scale(1.3);
+}
