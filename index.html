@@ -398,41 +398,36 @@
           Order on WhatsApp
         </a>
       </div>
-      <form class="contact-form" id="contactForm">
-        <h3>Send a Message</h3>
-              <form class="contact-form" id="contactForm">
-        <h3>Send a Message</h3>
+            <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
         
-        <div class="prescription-zone" onclick="sendPrescription()">
-          <div class="rx-icon">📸</div>
-          <h4>Upload Prescription</h4>
-          <p>Tap here to send your prescription securely via WhatsApp</p>
-        </div>
-        <div class="form-row">
+        <input type="hidden" name="access_key" value="a50d9b87-9d5a-49d4-9123-7eeb3d3a92a5">
+        
+        <input type="hidden" name="subject" value="New Message from Suraj Medicos Website">
 
+        <h3>Send a Message</h3>
         <div class="form-row">
           <div class="form-group">
             <label>Your Name *</label>
-            <input type="text" placeholder="John Doe" required />
+            <input type="text" name="name" placeholder="John Doe" required />
           </div>
           <div class="form-group">
             <label>Phone Number *</label>
-            <input type="tel" placeholder="+91 XXXXX XXXXX" required />
+            <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required />
           </div>
         </div>
         <div class="form-group">
-          <label>Subject</label>
-          <select>
-            <option>Prescription Inquiry</option>
-            <option>Product Availability</option>
-            <option>Home Delivery</option>
-            <option>Consultation</option>
-            <option>Other</option>
+          <label>Inquiry Type</label>
+          <select name="inquiry_type">
+            <option value="Prescription Inquiry">Prescription Inquiry</option>
+            <option value="Product Availability">Product Availability</option>
+            <option value="Home Delivery">Home Delivery</option>
+            <option value="Consultation">Consultation</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="form-group">
           <label>Message *</label>
-          <textarea rows="4" placeholder="How can we help you?" required></textarea>
+          <textarea name="message" rows="4" placeholder="How can we help you?" required></textarea>
         </div>
         <button type="submit" class="btn-primary full-w">Send Message 📨</button>
         <div class="form-success" id="formSuccess">✅ Thank you! We'll reach out to you shortly.</div>
