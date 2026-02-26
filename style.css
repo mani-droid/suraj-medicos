@@ -574,3 +574,11 @@ p { color: var(--text-muted); }
   .btn-primary, .btn-ghost { text-align: center; justify-content: center; }
   .services-grid .sc-big { grid-column: span 1; }
 }
+
+/* Add this to the very bottom of style.css */
+#preloader.hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.5s ease-out;
+}
