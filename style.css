@@ -618,3 +618,50 @@ p { color: var(--text-muted); }
   background-color: #00c896 !important; /* Forces your brand green */
   transform: scale(1.3);
 }
+
+/* --- FLOATING SHOPPING CART --- */
+.fab-cart {
+  position: fixed;
+  bottom: 85px; /* Sits perfectly above your WhatsApp button */
+  left: 20px;
+  z-index: 1000;
+  background: var(--dark3);
+  border: 1px solid var(--border);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.fab-cart:hover {
+  transform: scale(1.1);
+  background: var(--green);
+  border-color: var(--green);
+}
+
+.cart-icon {
+  font-size: 1.3rem;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #f85149; /* Alert Red */
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--dark);
+  transition: transform 0.2s ease;
+}
