@@ -447,3 +447,13 @@ if (contactForm) {
     });
   });
 }
+
+// ─── 15. PWA SERVICE WORKER ─────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('App Engine Registered!'))
+      .catch((err) => console.log('App Engine Failed!', err));
+  });
+}
+
