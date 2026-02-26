@@ -159,9 +159,56 @@ document.querySelectorAll('.tab').forEach(tab => {
 });
 
 // Cart toast
+/* ============================================================
+   UPDATED CART & INTERACTION LOGIC (REPLACE YOUR OLD VERSION)
+   ============================================================ */
+
+// 1. FIXED: Append the dynamic style to the head so animations work
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeDown {
+    to { opacity:0; transform:translateX(-50%) translateY(20px); }
+  }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateX(-50%) translateY(20px); }
+    to { opacity:1; transform:translateX(-50%) translateY(0); }
+  }
+`;
+document.head.appendChild(style); // THIS WAS MISSING
+
+// 2. ENHANCED: Smart Ordering Logic
 function addToCart(name) {
-  showToast(`✅ ${name} added!`);
+  // Check if it's a prescription drug (simple check for demo)
+  const isPrescription = name.toLowerCase().includes('amoxicillin') || 
+                         name.toLowerCase().includes('antibiotic');
+
+  if (isPrescription) {
+    showToast(`📝 Prescription Required for ${name}`);
+  } else {
+    showToast(`✅ ${name} added to inquiry!`);
+  }
+
+  // PIVOT TO INTERACTION: Open WhatsApp or AI after a short delay
+  setTimeout(() => {
+    const phone = "919650057400"; // Your Suraj Medicos Number
+    const msg = encodeURIComponent(`Hello Suraj Medicos! I want to order ${name}. Please let me know the price and delivery time.`);
+    
+    // Option A: Open WhatsApp (Direct Sale)
+    // window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+
+    // Option B: Trigger Botpress AI (Better for consultation)
+    if (window.botpress && window.botpress.sendEvent) {
+      window.botpress.sendEvent({ type: 'show' });
+      window.botpress.sendPayload({
+        type: 'text',
+        text: `I want to order ${name}.`
+      });
+    }
+  }, 1000);
 }
+
+// Keep your existing showToast function below this...
+
 
 function showToast(msg) {
   const toast = document.createElement('div');
