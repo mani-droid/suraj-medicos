@@ -521,7 +521,7 @@ p { color: var(--text-muted); }
 }
 
 .scroll-top {
-  position: fixed; bottom: 24px; right: 16px; z-index: 900;
+  position: fixed; bottom: 100px; right: 16px; z-index: 900;
   width: 48px; height: 48px; border-radius: 50%;
   background: var(--dark3); border: 1px solid var(--border);
   color: var(--text); font-size: 1.1rem; cursor: pointer;
