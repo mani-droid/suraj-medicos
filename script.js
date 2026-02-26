@@ -1,18 +1,26 @@
 /* ============================
    SURAJ MEDICOS — script.js
    ============================ */
+
+// 1. INITIALIZE ON LOAD
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Suraj Medicos Engine Started...");
-  // Manually trigger the first render to ensure items appear
+  
+  // Start the visual components
   renderProducts('all');
   buildTipsCarousel();
+  
+  // Set up observers
+  setupScrollReveal();
+  setupStatsCounter();
 });
 
 // ─── PRELOADER ───────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
-    document.getElementById('preloader').classList.add('hidden');
-  }, 1800);
+    const preloader = document.getElementById('preloader');
+    if (preloader) preloader.classList.add('hidden');
+  }, 1000); // Reduced delay for better feel
 });
 
 // ─── CUSTOM CURSOR ───────────────────────────────
@@ -23,56 +31,44 @@ let mouseX = 0, mouseY = 0, followerX = 0, followerY = 0;
 document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
-  cursor.style.left = mouseX + 'px';
-  cursor.style.top = mouseY + 'px';
+  if (cursor) {
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+  }
 });
 
 function animateFollower() {
   followerX += (mouseX - followerX) * 0.12;
   followerY += (mouseY - followerY) * 0.12;
-  follower.style.left = followerX + 'px';
-  follower.style.top = followerY + 'px';
+  if (follower) {
+    follower.style.left = followerX + 'px';
+    follower.style.top = followerY + 'px';
+  }
   requestAnimationFrame(animateFollower);
 }
 animateFollower();
 
-document.querySelectorAll('a, button, .tab, .product-card, .service-card').forEach(el => {
-  el.addEventListener('mouseenter', () => {
-    follower.style.width = '60px';
-    follower.style.height = '60px';
-    follower.style.borderColor = '#00c896';
-    follower.style.opacity = '0.8';
-  });
-  el.addEventListener('mouseleave', () => {
-    follower.style.width = '36px';
-    follower.style.height = '36px';
-    follower.style.borderColor = '#00c896';
-    follower.style.opacity = '0.5';
-  });
-});
-
-// ─── NAVBAR SCROLL ───────────────────────────────
+// ─── NAVBAR & MENU ───────────────────────────────
 const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 60);
+  if (navbar) navbar.classList.toggle('scrolled', window.scrollY > 60);
 });
 
-// ─── HAMBURGER ───────────────────────────────────
 const hamburger = document.getElementById('hamburger');
 const mobileMenu = document.getElementById('mobileMenu');
-hamburger.addEventListener('click', () => {
-  mobileMenu.classList.toggle('open');
-});
-mobileMenu.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => mobileMenu.classList.remove('open'));
-});
+if (hamburger && mobileMenu) {
+  hamburger.addEventListener('click', () => mobileMenu.classList.toggle('open'));
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+}
 
 // ─── SCROLL TO TOP ────────────────────────────────
 const scrollBtn = document.getElementById('scrollTop');
 window.addEventListener('scroll', () => {
-  scrollBtn.classList.toggle('show', window.scrollY > 400);
+  if (scrollBtn) scrollBtn.classList.toggle('show', window.scrollY > 400);
 });
-scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+if (scrollBtn) scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // ─── COUNTER ANIMATION ────────────────────────────
 function animateCounters() {
@@ -88,41 +84,34 @@ function animateCounters() {
   });
 }
 
-// ─── SCROLL REVEAL ────────────────────────────────
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-      revealObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('.service-card, .product-card, .testi-card, .why-item, .ahl').forEach(el => {
-  el.classList.add('reveal');
-  revealObserver.observe(el);
-});
-
-// Counter animation trigger
-// --- IMPROVED STATS OBSERVER ---
-const statsObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    // If the stats section is visible on screen
-    if (entry.isIntersecting) {
+function setupStatsCounter() {
+  const statsObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
       animateCounters();
-      statsObserver.unobserve(entry.target); // Stop watching after it starts
+      statsObserver.disconnect();
     }
-  });
-}, { threshold: 0.2 }); // Triggers when 20% of the section is visible
-
-const statsEl = document.querySelector('.hero-stats');
-if (statsEl) {
-    statsObserver.observe(statsEl);
-} else {
-    // Emergency Backup: If the observer fails, just start the numbers
-    setTimeout(animateCounters, 2000);
+  }, { threshold: 0.5 });
+  
+  const statsEl = document.querySelector('.hero-stats');
+  if (statsEl) statsObserver.observe(statsEl);
 }
 
+// ─── SCROLL REVEAL ────────────────────────────────
+function setupScrollReveal() {
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.service-card, .product-card, .testi-card, .why-item, .ahl').forEach(el => {
+    el.classList.add('reveal');
+    revealObserver.observe(el);
+  });
+}
 
 // ─── PRODUCTS DATA ────────────────────────────────
 const products = [
@@ -142,6 +131,8 @@ const products = [
 
 function renderProducts(filter = 'all') {
   const grid = document.getElementById('productGrid');
+  if (!grid) return;
+  
   const filtered = filter === 'all' ? products : products.filter(p => p.cat === filter);
   grid.innerHTML = filtered.map(p => `
     <div class="product-card reveal">
@@ -156,84 +147,33 @@ function renderProducts(filter = 'all') {
       </div>
     </div>
   `).join('');
-  
-  // Re-observe reveal cards
-  grid.querySelectorAll('.reveal').forEach((el, i) => {
-    el.style.transitionDelay = (i * 0.05) + 's';
-    revealObserver.observe(el);
-  });
 }
 
-renderProducts();
-
-// Filter tabs
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    renderProducts(tab.dataset.cat);
-  });
-});
-
-// Cart toast
-/* ============================================================
-   UPDATED CART & INTERACTION LOGIC (REPLACE YOUR OLD VERSION)
-   ============================================================ */
-
-// 1. FIXED: Append the dynamic style to the head so animations work
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fadeDown {
-    to { opacity:0; transform:translateX(-50%) translateY(20px); }
-  }
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateX(-50%) translateY(20px); }
-    to { opacity:1; transform:translateX(-50%) translateY(0); }
-  }
-`;
-document.head.appendChild(style); // THIS WAS MISSING
-
-// 2. ENHANCED: Smart Ordering Logic
+// ─── CART & TOAST ─────────────────────────────────
 function addToCart(name) {
-  // Check if it's a prescription drug (simple check for demo)
-  const isPrescription = name.toLowerCase().includes('amoxicillin') || 
-                         name.toLowerCase().includes('antibiotic');
-
+  const isPrescription = name.toLowerCase().includes('amoxicillin');
   if (isPrescription) {
     showToast(`📝 Prescription Required for ${name}`);
   } else {
-    showToast(`✅ ${name} added to inquiry!`);
+    showToast(`✅ ${name} added!`);
   }
 
-  // PIVOT TO INTERACTION: Open WhatsApp or AI after a short delay
+  // AI Interaction
   setTimeout(() => {
-    const phone = "919650057400"; // Your Suraj Medicos Number
-    const msg = encodeURIComponent(`Hello Suraj Medicos! I want to order ${name}. Please let me know the price and delivery time.`);
-    
-    // Option A: Open WhatsApp (Direct Sale)
-    // window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-
-    // Option B: Trigger Botpress AI (Better for consultation)
     if (window.botpress && window.botpress.sendEvent) {
       window.botpress.sendEvent({ type: 'show' });
-      window.botpress.sendPayload({
-        type: 'text',
-        text: `I want to order ${name}.`
-      });
+      window.botpress.sendPayload({ type: 'text', text: `I want to order ${name}.` });
     }
   }, 1000);
 }
 
-// Keep your existing showToast function below this...
-
-
 function showToast(msg) {
   const toast = document.createElement('div');
+  toast.className = 'toast-notification';
   toast.style.cssText = `
     position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
     background:#00c896; color:#0d1117; padding:12px 24px; border-radius:50px;
     font-weight:600; font-size:0.9rem; z-index:9999;
-    animation: fadeUp 0.3s ease, fadeDown 0.3s 2s ease forwards;
     box-shadow: 0 8px 30px rgba(0,200,150,0.4);
   `;
   toast.textContent = msg;
@@ -243,72 +183,34 @@ function showToast(msg) {
 
 // ─── HEALTH TIPS CAROUSEL ─────────────────────────
 const tips = [
-  { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily. Proper hydration supports kidney function, skin health, and energy levels throughout the day.' },
-  { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables, lean proteins, whole grains, and healthy fats. A balanced diet is the foundation of long-term health.' },
-  { icon: '🚶', title: 'Daily Exercise', text: 'Even a 30-minute walk daily can reduce the risk of heart disease, diabetes, and depression significantly. Start small, stay consistent.' },
-  { icon: '😴', title: 'Quality Sleep', text: 'Adults need 7–9 hours of quality sleep. Good sleep improves memory, mood, immunity, and metabolism.' },
-  { icon: '💊', title: 'Medicine Compliance', text: 'Always complete the full course of prescribed medicines. Never self-medicate — consult a licensed pharmacist or doctor first.' },
+  { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily.' },
+  { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins.' },
+  { icon: '😴', title: 'Quality Sleep', text: 'Adults need 7–9 hours of quality sleep.' },
 ];
-
-let tipIdx = 0;
 
 function buildTipsCarousel() {
   const carousel = document.getElementById('tipsCarousel');
   const dotsEl = document.getElementById('tipsDots');
+  if (!carousel || !dotsEl) return;
   
   carousel.innerHTML = `<div class="tips-track" id="tipsTrack">
     ${tips.map(t => `
       <div class="tip-slide">
         <div class="tip-card">
           <div class="tip-icon">${t.icon}</div>
-          <div>
-            <h3>${t.title}</h3>
-            <p>${t.text}</p>
-          </div>
+          <div><h3>${t.title}</h3><p>${t.text}</p></div>
         </div>
       </div>
     `).join('')}
   </div>`;
-  
-  dotsEl.innerHTML = tips.map((_, i) =>
-    `<div class="tip-dot ${i===0?'active':''}" onclick="goTip(${i})"></div>`
-  ).join('');
 }
 
-function goTip(i) {
-  tipIdx = i;
-  const track = document.getElementById('tipsTrack');
-  if (track) track.style.transform = `translateX(-${i * 100}%)`;
-  document.querySelectorAll('.tip-dot').forEach((d, idx) =>
-    d.classList.toggle('active', idx === i)
-  );
-}
-
-buildTipsCarousel();
-setInterval(() => goTip((tipIdx + 1) % tips.length), 4000);
-
-// ─── CONTACT FORM ─────────────────────────────────
-document.getElementById('contactForm').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = '⏳ Sending...';
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = 'Send Message 📨';
-    btn.disabled = false;
-    document.getElementById('formSuccess').style.display = 'block';
-    e.target.reset();
-    setTimeout(() => {
-      document.getElementById('formSuccess').style.display = 'none';
-    }, 5000);
-  }, 1500);
-});
-
-// ─── ADD FADE-DOWN KEYFRAME DYNAMICALLY ───────────
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fadeDown {
-    to { opacity:0; transform:translateX(-50%) translateY(20px); }
-  }
+// ─── DYNAMIC STYLES (Single Declaration) ───────────
+const customStyles = document.createElement('style');
+customStyles.textContent = `
+  @keyframes fadeDown { to { opacity:0; transform:translateX(-50%) translateY(20px); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
+  .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s all ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
 `;
-document.head.appendChild(style);
+document.head.appendChild(customStyles);
