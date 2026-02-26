@@ -314,3 +314,11 @@ function startTypewriter() {
   setTimeout(startTypewriter, typingSpeed);
 }
 
+// ─── 11. PRESCRIPTION UPLOAD ROUTER ────────────────
+function sendPrescription() {
+  const phone = "919650037400"; // Your Suraj Medicos WhatsApp number
+  const message = "Hello Suraj Medicos! 🏥\n\nI would like to order medicines using my prescription. I will attach the photo of my prescription below.";
+  
+  const encodedText = encodeURIComponent(message);
+  window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+}
