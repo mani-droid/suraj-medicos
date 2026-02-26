@@ -3,7 +3,6 @@
    ============================ */
 
 // ─── 1. ENGINE START ──────────────────────────────
-// ─── 1. ENGINE START ──────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Suraj Medicos Engine Started...");
   renderProducts('all');
@@ -16,6 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // This waits 2 seconds, then turns on the Typewriter
   setTimeout(startTypewriter, 2000); 
+  // NEW FUNCTIONS
+  updateCartBadge();   // Checks memory for old cart items
+  checkStoreStatus();  // Checks the clock for Open/Closed
+  setupFAQ();          // Turns on the Accordion clicks
+});
+
 });
 
 
@@ -166,18 +171,29 @@ function setupLiveSearch() {
   }
 }
 
-// ─── 7. SHOPPING CART ENGINE ──────────────────────
-let cart = []; // Declared ONLY ONCE!
+// ─── 7. SMART MEMORY CART ENGINE ──────────────────────
+// Load cart from LocalStorage, or start empty if nothing exists
+let cart = JSON.parse(localStorage.getItem('surajCart')) || []; 
 
-function addToCart(name) {
-  cart.push(name);
+function updateCartBadge() {
   const badge = document.getElementById('cartBadge');
-  if (badge) {
+  if (!badge) return;
+  
+  if (cart.length > 0) {
     badge.style.display = 'flex';
     badge.textContent = cart.length;
     badge.style.transform = 'scale(1.3)';
     setTimeout(() => badge.style.transform = 'scale(1)', 200);
+  } else {
+    badge.style.display = 'none';
+    badge.textContent = '0';
   }
+}
+
+function addToCart(name) {
+  cart.push(name);
+  localStorage.setItem('surajCart', JSON.stringify(cart)); // Save to memory!
+  updateCartBadge();
   showToast(`✅ ${name} added!`);
 }
 
@@ -196,13 +212,10 @@ function checkoutCart() {
   const encodedText = encodeURIComponent(orderText);
   window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
   
-  // Clear cart
+  // Clear cart & memory after successful checkout
   cart = [];
-  const badge = document.getElementById('cartBadge');
-  if (badge) {
-    badge.style.display = 'none';
-    badge.textContent = '0';
-  }
+  localStorage.removeItem('surajCart');
+  updateCartBadge();
 }
 
 function showToast(msg) {
@@ -219,7 +232,55 @@ function showToast(msg) {
   setTimeout(() => toast.remove(), 2500);
 }
 
-// ─── 8. HEALTH TIPS CAROUSEL ──────────────────────
+// ─── 8. LIVE STORE STATUS (CLOCK) ─────────────────────
+function checkStoreStatus() {
+  const dot = document.getElementById('statusDot');
+  const text = document.getElementById('statusText');
+  if (!dot || !text) return;
+
+  const now = new Date();
+  const day = now.getDay(); // 0 is Sunday
+  const hour = now.getHours();
+  
+  let isOpen = false;
+  // Sunday 9 AM to 8 PM
+  if (day === 0) {
+    isOpen = (hour >= 9 && hour < 20);
+  } 
+  // Mon-Sat 10 AM to 11 PM
+  else {
+    isOpen = (hour >= 10 && hour < 23);
+  }
+
+  if (isOpen) {
+    dot.className = 'status-dot open';
+    text.textContent = '🟢 Open Now';
+    text.style.color = '#25d366';
+  } else {
+    dot.className = 'status-dot closed';
+    text.textContent = '🔴 Closed';
+    text.style.color = '#f85149';
+  }
+}
+
+// ─── 9. INTERACTIVE FAQ ACCORDION ─────────────────────
+function setupFAQ() {
+  const questions = document.querySelectorAll('.faq-question');
+  questions.forEach(q => {
+    q.addEventListener('click', () => {
+      const parent = q.parentElement;
+      // Close all other FAQs first
+      document.querySelectorAll('.faq-item').forEach(item => {
+        if (item !== parent) item.classList.remove('active');
+      });
+      // Toggle the one you clicked
+      parent.classList.toggle('active');
+    });
+  });
+}
+
+
+// ─── 10. HEALTH TIPS CAROUSEL ──────────────────────
 const healthTipsData = [
   { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily. Proper hydration supports kidney function and energy.' },
   { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins. Good nutrition is the foundation of health.' },
@@ -257,7 +318,7 @@ function goTip(i) {
   document.querySelectorAll('.tip-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
 }
 
-// ─── 9. SCROLL REVEAL ─────────────────────────────
+// ─── 11. SCROLL REVEAL ─────────────────────────────
 function setupScrollReveal() {
   const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -274,7 +335,7 @@ function setupScrollReveal() {
   });
 }
 
-// ─── 10. DYNAMIC TYPEWRITER EFFECT ────────────────
+// ─── 12. DYNAMIC TYPEWRITER EFFECT ────────────────
 const typeWords = ["Health", "Wellness", "Family", "Recovery"];
 let wordIdx = 0;
 let charIdx = 6; // Starts at 6 because "Health" is already on the screen
@@ -314,7 +375,7 @@ function startTypewriter() {
   setTimeout(startTypewriter, typingSpeed);
 }
 
-// ─── 11. PRESCRIPTION UPLOAD ROUTER ────────────────
+// ─── 13. PRESCRIPTION UPLOAD ROUTER ────────────────
 function sendPrescription() {
   const phone = "919650037400"; // Your Suraj Medicos WhatsApp number
   const message = "Hello Suraj Medicos! 🏥\n\nI would like to order medicines using my prescription. I will attach the photo of my prescription below.";
@@ -323,7 +384,7 @@ function sendPrescription() {
   window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
 }
 
-// ─── 12. CONTACT FORM EMAIL ROUTER ────────────────
+// ─── 14. CONTACT FORM EMAIL ROUTER ────────────────
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
   contactForm.addEventListener('submit', function(e) {
