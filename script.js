@@ -188,22 +188,55 @@ const tips = [
   { icon: '😴', title: 'Quality Sleep', text: 'Adults need 7–9 hours of quality sleep.' },
 ];
 
+// 1. UPDATED DATA & ENGINE
+const tips = [
+  { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily. Proper hydration supports kidney function and energy.' },
+  { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins. Good nutrition is the foundation of health.' },
+  { icon: '🚶', title: 'Daily Exercise', text: 'A 30-minute walk daily can reduce the risk of heart disease and diabetes significantly.' }
+];
+
+let tipIdx = 0;
+
 function buildTipsCarousel() {
   const carousel = document.getElementById('tipsCarousel');
   const dotsEl = document.getElementById('tipsDots');
   if (!carousel || !dotsEl) return;
   
+  // Create the "Track" that will slide left and right
   carousel.innerHTML = `<div class="tips-track" id="tipsTrack">
     ${tips.map(t => `
       <div class="tip-slide">
         <div class="tip-card">
           <div class="tip-icon">${t.icon}</div>
-          <div><h3>${t.title}</h3><p>${t.text}</p></div>
+          <div>
+            <h3>${t.title}</h3>
+            <p>${t.text}</p>
+          </div>
         </div>
       </div>
     `).join('')}
   </div>`;
+  
+  // Create the navigation dots
+  dotsEl.innerHTML = tips.map((_, i) =>
+    `<div class="tip-dot ${i===0?'active':''}" onclick="goTip(${i})"></div>`
+  ).join('');
+
+  // Start the automatic movement
+  setInterval(() => goTip((tipIdx + 1) % tips.length), 4000);
 }
+
+function goTip(i) {
+  tipIdx = i;
+  const track = document.getElementById('tipsTrack');
+  if (track) track.style.transform = `translateX(-${i * 100}%)`;
+  
+  // Update dots
+  document.querySelectorAll('.tip-dot').forEach((d, idx) =>
+    d.classList.toggle('active', idx === i)
+  );
+}
+
 
 // ─── DYNAMIC STYLES (Single Declaration) ───────────
 const customStyles = document.createElement('style');
