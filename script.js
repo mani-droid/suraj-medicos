@@ -170,6 +170,7 @@ function setupLiveSearch() {
 
 // ─── 7. SMART MEMORY CART ENGINE ──────────────────────
 // Load cart from LocalStorage, or start empty if nothing exists
+// ─── 7. SMART MEMORY CART ENGINE ──────────────────────
 let cart = JSON.parse(localStorage.getItem('surajCart')) || []; 
 
 function updateCartBadge() {
@@ -187,29 +188,51 @@ function updateCartBadge() {
   }
 }
 
+// Handles grid buttons
 function addToCart(name) {
-  cart.push(name);
-  localStorage.setItem('surajCart', JSON.stringify(cart)); // Save to memory!
+  cart.push(name); 
+  localStorage.setItem('surajCart', JSON.stringify(cart));
   updateCartBadge();
   showToast(`✅ ${name} added!`);
 }
 
+// Handles typed-in unlisted medicines
+function addCustomItem() {
+  const input = document.getElementById('customItemInput');
+  const itemName = input.value.trim();
+  
+  if (itemName === '') {
+    showToast("⚠️ Please type a medicine name first.");
+    return;
+  }
+  
+  cart.push(itemName);
+  localStorage.setItem('surajCart', JSON.stringify(cart));
+  updateCartBadge();
+  showToast(`✅ Added custom request!`);
+  input.value = ''; // clears the box after adding
+}
+
+// The New WhatsApp Checkout Flow
 function checkoutCart() {
   if (cart.length === 0) {
     showToast("⚠️ Your cart is empty!");
     return;
   }
-  let orderText = "Hello Suraj Medicos! I would like to place an order for home delivery:\n\n";
+  
+  // Notice we ask for availability and the final bill here
+  let orderText = "Hello Suraj Medicos! 🏥\nI would like to check availability for the following items:\n\n";
+
   cart.forEach((item, index) => {
     orderText += `${index + 1}. ${item}\n`;
   });
-  orderText += "\nPlease let me know the total price and when it can be delivered.";
+  
+  orderText += "\nCould you please confirm if these are in stock and let me know the final discounted bill amount?";
 
   const phone = "919650037400"; 
   const encodedText = encodeURIComponent(orderText);
   window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
   
-  // Clear cart & memory after successful checkout
   cart = [];
   localStorage.removeItem('surajCart');
   updateCartBadge();
@@ -228,6 +251,7 @@ function showToast(msg) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2500);
 }
+
 
 // ─── 8. LIVE STORE STATUS (CLOCK) ─────────────────────
 function checkStoreStatus() {
