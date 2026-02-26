@@ -20,7 +20,7 @@ window.addEventListener('load', () => {
   setTimeout(() => {
     const preloader = document.getElementById('preloader');
     if (preloader) preloader.classList.add('hidden');
-  }, 1000); // Reduced delay for better feel
+  }, 1000);
 });
 
 // ─── CUSTOM CURSOR ───────────────────────────────
@@ -62,13 +62,6 @@ if (hamburger && mobileMenu) {
     a.addEventListener('click', () => mobileMenu.classList.remove('open'));
   });
 }
-
-// ─── SCROLL TO TOP ────────────────────────────────
-const scrollBtn = document.getElementById('scrollTop');
-window.addEventListener('scroll', () => {
-  if (scrollBtn) scrollBtn.classList.toggle('show', window.scrollY > 400);
-});
-if (scrollBtn) scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // ─── COUNTER ANIMATION ────────────────────────────
 function animateCounters() {
@@ -151,14 +144,7 @@ function renderProducts(filter = 'all') {
 
 // ─── CART & TOAST ─────────────────────────────────
 function addToCart(name) {
-  const isPrescription = name.toLowerCase().includes('amoxicillin');
-  if (isPrescription) {
-    showToast(`📝 Prescription Required for ${name}`);
-  } else {
-    showToast(`✅ ${name} added!`);
-  }
-
-  // AI Interaction
+  showToast(`✅ ${name} added!`);
   setTimeout(() => {
     if (window.botpress && window.botpress.sendEvent) {
       window.botpress.sendEvent({ type: 'show' });
@@ -169,7 +155,6 @@ function addToCart(name) {
 
 function showToast(msg) {
   const toast = document.createElement('div');
-  toast.className = 'toast-notification';
   toast.style.cssText = `
     position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
     background:#00c896; color:#0d1117; padding:12px 24px; border-radius:50px;
@@ -183,13 +168,6 @@ function showToast(msg) {
 
 // ─── HEALTH TIPS CAROUSEL ─────────────────────────
 const tips = [
-  { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily.' },
-  { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins.' },
-  { icon: '😴', title: 'Quality Sleep', text: 'Adults need 7–9 hours of quality sleep.' },
-];
-
-// 1. UPDATED DATA & ENGINE
-const tips = [
   { icon: '💧', title: 'Stay Hydrated', text: 'Drink at least 8 glasses of water daily. Proper hydration supports kidney function and energy.' },
   { icon: '🥗', title: 'Balanced Diet', text: 'Include a rainbow of vegetables and lean proteins. Good nutrition is the foundation of health.' },
   { icon: '🚶', title: 'Daily Exercise', text: 'A 30-minute walk daily can reduce the risk of heart disease and diabetes significantly.' }
@@ -202,27 +180,20 @@ function buildTipsCarousel() {
   const dotsEl = document.getElementById('tipsDots');
   if (!carousel || !dotsEl) return;
   
-  // Create the "Track" that will slide left and right
   carousel.innerHTML = `<div class="tips-track" id="tipsTrack">
     ${tips.map(t => `
       <div class="tip-slide">
         <div class="tip-card">
           <div class="tip-icon">${t.icon}</div>
-          <div>
-            <h3>${t.title}</h3>
-            <p>${t.text}</p>
-          </div>
+          <div><h3>${t.title}</h3><p>${t.text}</p></div>
         </div>
-      </div>
-    `).join('')}
+      </div>`).join('')}
   </div>`;
   
-  // Create the navigation dots
   dotsEl.innerHTML = tips.map((_, i) =>
     `<div class="tip-dot ${i===0?'active':''}" onclick="goTip(${i})"></div>`
   ).join('');
 
-  // Start the automatic movement
   setInterval(() => goTip((tipIdx + 1) % tips.length), 4000);
 }
 
@@ -230,19 +201,12 @@ function goTip(i) {
   tipIdx = i;
   const track = document.getElementById('tipsTrack');
   if (track) track.style.transform = `translateX(-${i * 100}%)`;
-  
-  // Update dots
-  document.querySelectorAll('.tip-dot').forEach((d, idx) =>
-    d.classList.toggle('active', idx === i)
-  );
+  document.querySelectorAll('.tip-dot').forEach((d, idx) => d.classList.toggle('active', idx === i));
 }
 
-
-// ─── DYNAMIC STYLES (Single Declaration) ───────────
+// ─── DYNAMIC STYLES ───────────────────────────────
 const customStyles = document.createElement('style');
 customStyles.textContent = `
-  @keyframes fadeDown { to { opacity:0; transform:translateX(-50%) translateY(20px); } }
-  @keyframes fadeUp { from { opacity:0; transform:translateX(-50%) translateY(20px); } to { opacity:1; transform:translateX(-50%) translateY(0); } }
   .reveal { opacity: 0; transform: translateY(30px); transition: 0.8s all ease; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
 `;
