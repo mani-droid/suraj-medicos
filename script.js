@@ -1,6 +1,12 @@
 /* ============================
    SURAJ MEDICOS — script.js
    ============================ */
+document.addEventListener('DOMContentLoaded', () => {
+  console.log("Suraj Medicos Engine Started...");
+  // Manually trigger the first render to ensure items appear
+  renderProducts('all');
+  buildTipsCarousel();
+});
 
 // ─── PRELOADER ───────────────────────────────────
 window.addEventListener('load', () => {
@@ -98,14 +104,25 @@ document.querySelectorAll('.service-card, .product-card, .testi-card, .why-item,
 });
 
 // Counter animation trigger
+// --- IMPROVED STATS OBSERVER ---
 const statsObserver = new IntersectionObserver((entries) => {
-  if (entries[0].isIntersecting) {
-    animateCounters();
-    statsObserver.disconnect();
-  }
-}, { threshold: 0.5 });
+  entries.forEach(entry => {
+    // If the stats section is visible on screen
+    if (entry.isIntersecting) {
+      animateCounters();
+      statsObserver.unobserve(entry.target); // Stop watching after it starts
+    }
+  });
+}, { threshold: 0.2 }); // Triggers when 20% of the section is visible
+
 const statsEl = document.querySelector('.hero-stats');
-if (statsEl) statsObserver.observe(statsEl);
+if (statsEl) {
+    statsObserver.observe(statsEl);
+} else {
+    // Emergency Backup: If the observer fails, just start the numbers
+    setTimeout(animateCounters, 2000);
+}
+
 
 // ─── PRODUCTS DATA ────────────────────────────────
 const products = [
