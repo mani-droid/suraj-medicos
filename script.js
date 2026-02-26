@@ -180,21 +180,57 @@ if (searchInput) {
 // ─── SHOPPING CART ENGINE ─────────────────────────
 let cart = []; // This empty array acts as the customer's basket
 
-function addToCart(name, priceStr) {
-  // 1. Add the item to the cart
-  cart.push({ name: name, price: priceStr });
+// ─── SHOPPING CART & CHECKOUT ENGINE ─────────────────────────
+let cart = []; // The customer's digital basket
+
+function addToCart(name) {
+  // 1. Add item to cart
+  cart.push(name);
   
-  // 2. Show the toast notification
-  showToast(`✅ ${name} added! (${cart.length} items in cart)`);
+  // 2. Update the red badge number
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.style.display = 'flex'; // Make badge visible
+    badge.textContent = cart.length; // Update the number
+    
+    // Add a little "pop" animation to the badge
+    badge.style.transform = 'scale(1.3)';
+    setTimeout(() => badge.style.transform = 'scale(1)', 200);
+  }
   
-  // 3. Optional: Trigger AI to help them find more
-  setTimeout(() => {
-    if (window.botpress && window.botpress.sendEvent && cart.length === 1) {
-      window.botpress.sendEvent({ type: 'show' });
-      window.botpress.sendPayload({ type: 'text', text: `I see you added ${name}. Do you need anything else before checkout?` });
-    }
-  }, 1500);
+  // 3. Show notification
+  showToast(`✅ ${name} added!`);
 }
+
+function checkoutCart() {
+  if (cart.length === 0) {
+    showToast("⚠️ Your cart is empty!");
+    return;
+  }
+
+  // Build the professional receipt
+  let orderText = "Hello Suraj Medicos! I would like to place an order for home delivery:\n\n";
+  
+  cart.forEach((item, index) => {
+    orderText += `${index + 1}. ${item}\n`;
+  });
+  
+  orderText += "\nPlease let me know the total price and when it can be delivered.";
+
+  // Open WhatsApp to send the order
+  const phone = "919650037400"; // Your pharmacy number
+  const encodedText = encodeURIComponent(orderText);
+  window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+  
+  // Clear the cart after sending
+  cart = [];
+  const badge = document.getElementById('cartBadge');
+  if (badge) {
+    badge.style.display = 'none';
+    badge.textContent = '0';
+  }
+}
+
 
 // ─── WHATSAPP CHECKOUT LOGIC ──────────────────────
 function checkoutCart() {
