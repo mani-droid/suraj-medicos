@@ -177,15 +177,50 @@ if (searchInput) {
 }
 
 // ─── CART & TOAST ─────────────────────────────────
-function addToCart(name) {
-  showToast(`✅ ${name} added!`);
+// ─── SHOPPING CART ENGINE ─────────────────────────
+let cart = []; // This empty array acts as the customer's basket
+
+function addToCart(name, priceStr) {
+  // 1. Add the item to the cart
+  cart.push({ name: name, price: priceStr });
+  
+  // 2. Show the toast notification
+  showToast(`✅ ${name} added! (${cart.length} items in cart)`);
+  
+  // 3. Optional: Trigger AI to help them find more
   setTimeout(() => {
-    if (window.botpress && window.botpress.sendEvent) {
+    if (window.botpress && window.botpress.sendEvent && cart.length === 1) {
       window.botpress.sendEvent({ type: 'show' });
-      window.botpress.sendPayload({ type: 'text', text: `I want to order ${name}.` });
+      window.botpress.sendPayload({ type: 'text', text: `I see you added ${name}. Do you need anything else before checkout?` });
     }
-  }, 1000);
+  }, 1500);
 }
+
+// ─── WHATSAPP CHECKOUT LOGIC ──────────────────────
+function checkoutCart() {
+  if (cart.length === 0) {
+    showToast("⚠️ Your cart is empty!");
+    return;
+  }
+
+  // Build the receipt text
+  let orderText = "Hello Suraj Medicos! I would like to place an order for home delivery:\n\n";
+  
+  cart.forEach((item, index) => {
+    orderText += `${index + 1}. ${item.name}\n`;
+  });
+  
+  orderText += "\nPlease let me know the total price and when it can be delivered.";
+
+  // Open WhatsApp with the pre-filled order
+  const phone = "919650037400"; // Your pharmacy number
+  const encodedText = encodeURIComponent(orderText);
+  window.open(`https://wa.me/${phone}?text=${encodedText}`, '_blank');
+  
+  // Empty the cart after sending
+  cart = []; 
+}
+
 
 function showToast(msg) {
   const toast = document.createElement('div');
