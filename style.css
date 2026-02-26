@@ -665,3 +665,22 @@ p { color: var(--text-muted); }
   border: 2px solid var(--dark);
   transition: transform 0.2s ease;
 }
+
+/* --- TYPEWRITER STABILIZER --- */
+.type-box {
+  display: inline-block;
+  min-width: 5.5em; /* Creates a fixed invisible box for the typing */
+  text-align: left;
+}
+
+.hero-title {
+  max-width: 650px; /* Prevents text from ever hiding behind the right-side cards */
+  line-height: 1.3 !important;
+}
+
+/* Ensure it looks perfect on mobile too */
+@media (max-width: 768px) {
+  .type-box {
+    min-width: 100%; /* Allows it to flow naturally on small phones */
+  }
+}
