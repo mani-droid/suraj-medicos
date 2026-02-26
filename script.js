@@ -3,14 +3,21 @@
    ============================ */
 
 // ─── 1. ENGINE START ──────────────────────────────
+// ─── 1. ENGINE START ──────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   console.log("Suraj Medicos Engine Started...");
   renderProducts('all');
   buildTipsCarousel();
   setupScrollReveal();
   setupStatsCounter();
-  setupLiveSearch();
+  
+  // This turns on the live search bar
+  if (typeof setupLiveSearch === 'function') setupLiveSearch(); 
+  
+  // This waits 2 seconds, then turns on the Typewriter
+  setTimeout(startTypewriter, 2000); 
 });
+
 
 // ─── 2. PRELOADER ─────────────────────────────────
 window.addEventListener('load', () => {
@@ -266,3 +273,44 @@ function setupScrollReveal() {
     revealObserver.observe(el);
   });
 }
+
+// ─── 10. DYNAMIC TYPEWRITER EFFECT ────────────────
+const typeWords = ["Health", "Wellness", "Family", "Recovery"];
+let wordIdx = 0;
+let charIdx = 6; // Starts at 6 because "Health" is already on the screen
+let isDeleting = true; // Tells the script to start by erasing
+
+function startTypewriter() {
+  const typeElement = document.getElementById('typewriter');
+  if (!typeElement) return;
+
+  const currentWord = typeWords[wordIdx];
+  
+  // Typing or Erasing logic
+  if (isDeleting) {
+    typeElement.textContent = currentWord.substring(0, charIdx - 1);
+    charIdx--;
+  } else {
+    typeElement.textContent = currentWord.substring(0, charIdx + 1);
+    charIdx++;
+  }
+
+  // Set the speed (Erasing is faster than typing)
+  let typingSpeed = isDeleting ? 80 : 150;
+
+  // When a word is fully typed out, pause for 2 seconds
+  if (!isDeleting && charIdx === currentWord.length) {
+    typingSpeed = 2000; 
+    isDeleting = true;
+  } 
+  // When a word is fully erased, switch to the next word
+  else if (isDeleting && charIdx === 0) {
+    isDeleting = false;
+    wordIdx = (wordIdx + 1) % typeWords.length;
+    typingSpeed = 500; // Short pause before typing new word
+  }
+
+  // Loop the function
+  setTimeout(startTypewriter, typingSpeed);
+}
+
