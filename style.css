@@ -684,3 +684,39 @@ p { color: var(--text-muted); }
     min-width: 100%; /* Allows it to flow naturally on small phones */
   }
 }
+
+/* --- SMART PRESCRIPTION ZONE --- */
+.prescription-zone {
+  border: 2px dashed var(--green);
+  border-radius: var(--radius);
+  padding: 25px 20px;
+  text-align: center;
+  background: rgba(0, 200, 150, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.prescription-zone:hover {
+  background: rgba(0, 200, 150, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0, 200, 150, 0.1);
+}
+
+.rx-icon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.prescription-zone h4 {
+  color: var(--white);
+  margin-bottom: 4px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+}
+
+.prescription-zone p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: 0;
+}
