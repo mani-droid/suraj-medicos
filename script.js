@@ -21,9 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupFAQ();          // Turns on the Accordion clicks
 });
 
-});
-
-
 // ─── 2. PRELOADER ─────────────────────────────────
 window.addEventListener('load', () => {
   setTimeout(() => {
