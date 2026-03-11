@@ -761,3 +761,33 @@ p { color: var(--text-muted); }
 @media (max-width: 768px) {
   .store-status { display: none; /* Hides badge on very small screens to save space */ }
 }
+
+/* FLOATING BUTTON TOOLTIPS */
+.fab-tooltip {
+  position: absolute;
+  left: 65px; /* Pushes the box to the right of your left-aligned buttons */
+  top: 50%;
+  transform: translateY(-50%) translateX(-10px);
+  background: var(--dark3);
+  color: var(--white);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  border: 1px solid var(--border);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none; /* Prevents the tooltip itself from being clicked */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* The hover animation trigger */
+.fab-cart:hover .fab-tooltip,
+.fab-whatsapp:hover .fab-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(-50%) translateX(0);
+}
